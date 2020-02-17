@@ -24,7 +24,7 @@ export default class UserService {
         return null;
       }
 
-      const match = bcrypt.compare(password, user.password);
+      const match = await bcrypt.compare(password, user.password);
 
       if (!match) {
         Logger.log("info", `Incorrect password for user! (${login})`);
