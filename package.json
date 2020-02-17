@@ -41,7 +41,7 @@
     "pg-hstore": "^2.3.3",
     "reflect-metadata": "^0.1.13",
     "sequelize": "^5.21.2",
-    "sequelize-typescript": "^1.0.0",
+    "sequelize-typescript": "^1.1.0",
     "winston": "^3.2.1",
     "winston-sentry-raven-transport": "^1.2.0"
   },
