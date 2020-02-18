@@ -3,80 +3,83 @@ import "module-alias/register";
 /* eslint-disable @typescript-eslint/camelcase */
 
 import bodyParser from "body-parser";
+import cookieParser from "cookie-parser";
 import config from "config";
-import coViews from "co-views";
+import csrf from "csurf";
 import express from "express";
-import util from "util";
 
 import database from "@/database";
 import Logger from "@util/logger";
 import oauth2Server from "@middleware/oauth";
+import UserService from "@services/UserService";
 
 const app = express();
-const render = coViews("views");
-// app.set("view engine", "ejs");
+
+const csrfProtection = csrf({
+  cookie: true,
+  value: req => req.body.state,
+});
+
+app.set("view engine", "ejs");
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cookieParser());
 
 app.post("/oauth/token", oauth2Server.token());
 
-app.get("/oauth/authorize", (req, res) => {
-  // Redirect anonymous users to login page.
-  if (!req.app.locals.user) {
-    return res.redirect(
-      util.format(
-        "/login?redirect=%s&client_id=%s&redirect_uri=%s",
-        req.path,
-        req.query.client_id,
-        req.query.redirect_uri,
-      ),
-    );
-  }
-
-  return render("authorize", {
-    client_id: req.query.client_id,
-    redirect_uri: req.query.redirect_uri,
+app.get("/oauth/authorize", csrfProtection, (req, res) => {
+  return res.render("authorize", {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    // @ts-ignore
+    csrf: req.csrfToken(),
+    redirect: req.query.redirect ? req.query.redirect : true,
+    client_id: req.query.client_id ? req.query.client_id : "oauth-server",
+    redirect_uri: req.query.redirect_uri ? req.query.redirect_uri : "http://localhost:5000/dashboard",
+    response_type: "code",
   });
 });
 
-app.post("/oauth/authorize", (req, res) => {
-  // Redirect anonymous users to login page.
-  if (!req.app.locals.user) {
-    return res.redirect(
-      util.format("/login?client_id=%s&redirect_uri=%s", req.query.client_id, req.query.redirect_uri),
-    );
-  }
+app.post(
+  "/oauth/authorize",
+  csrfProtection,
+  async (req, res, next) => {
+    try {
+      const user = await UserService.getUserByLoginAndPassword(req.body.username, req.body.password);
 
-  return oauth2Server.authorize();
-});
+      if (!user) {
+        return res.render("authorize", {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+          // @ts-ignore
+          csrf: req.csrfToken(),
+          redirect: req.body.redirect,
+          client_id: req.body.client_id,
+          redirect_uri: req.body.redirect_uri,
+          response_type: "code",
+        });
+      }
 
-app.get("/login", req => {
-  return render("login", {
-    redirect: req.query.redirect,
-    client_id: req.query.client_id,
-    redirect_uri: req.query.redirect_uri,
-  });
-});
+      req.body.user = user.toJSON();
+      return next();
+    } catch (err) {
+      Logger.log("error", "Error while POST /oauth/authorize", { err });
+      return res.status(500).send();
+    }
+  },
+  oauth2Server.authorize({
+    authenticateHandler: {
+      // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+      handle: req => {
+        return req.body.user;
+      },
+    },
+  }),
+);
 
-app.post("/login", (req, res) => {
-  // @TODO: Insert your own login mechanism.
-  if (req.body.email !== "nommo_bd1@tlen.pl") {
-    return render("login", {
-      redirect: req.body.redirect,
-      client_id: req.body.client_id,
-      redirect_uri: req.body.redirect_uri,
-    });
-  }
-
-  // Successful logins should send the user back to /oauth/authorize.
-  const path = req.body.redirect || "/home";
-
-  // TODO: After successful login redirect to the URL from Database
-
-  return res.redirect(
-    util.format("/%s?client_id=%s&redirect_uri=%s", path, req.query.client_id, req.query.redirect_uri),
-  );
+app.get("/oauth/me", oauth2Server.authenticate(), (req, res) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { id, password, ...rest } = res.locals.oauth.token.user;
+  return res.json(rest);
 });
 
 app.listen(config.get("oauth.port"), async err => {

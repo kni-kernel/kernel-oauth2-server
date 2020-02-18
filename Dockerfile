@@ -33,6 +33,7 @@ ENV NODE_ENV=${NODE_ENV}
 
 ## Copy config files
 COPY config ./config
+COPY views ./views
 
 ## Copy package jsons from installer
 COPY --from=installer /usr/src/app/package*.json ./

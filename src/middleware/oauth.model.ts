@@ -1,31 +1,52 @@
 import User from "@models/User";
 
-import clientsService from "@services/clientsService";
-import tokenService from "@services/tokenService";
-import userService from "@services/userService";
+import AccessTokenService from "@services/AccessTokenService";
+import AuthorizationCodeService from "@services/AuthorizationCodeService";
+import ClientsService from "@services/ClientsService";
+import UserService from "@services/UserService";
 
 import AccessToken from "AccessToken";
+import AuthorizationCode from "AuthorizationCode";
 import ClientResponse from "ClientResponse";
 import RefreshToken from "RefreshToken";
 
 const model = {
   getAccessToken: async function(accessToken: string): Promise<AccessToken> {
     try {
-      const token = await tokenService.getTokenByAccessToken(accessToken);
-      const client = await clientsService.getClientById(token.clientId);
-      const user = await userService.getUserById(token.userId);
+      const token = await AccessTokenService.getTokenByAccessToken(accessToken);
 
-      if (!token || !client || !user) {
+      if (!token) {
         return null;
       }
 
       return {
         accessToken: token.accessToken,
-        client: {
-          id: client.clientId,
-        },
-        expires: token.accessTokenExpirationDate,
-        user: userService.cleanUpUser(user),
+        client: token.client.toJSON(),
+        accessTokenExpiresAt: token.accessTokenExpirationDate,
+        refreshToken: token.refreshToken,
+        refreshTokenExpiresAt: token.refreshTokenExpirationDate,
+        scope: token.scope,
+        user: token.user.toJSON(),
+      };
+    } catch (err) {
+      return null;
+    }
+  },
+
+  getAuthorizationCode: async function(authorizationCode: string): Promise<AuthorizationCode> {
+    try {
+      const authorizationCodeModel = await AuthorizationCodeService.getCode(authorizationCode);
+
+      if (!authorizationCodeModel) {
+        return null;
+      }
+
+      return {
+        authorizationCode: authorizationCodeModel.authorizationCode,
+        expiresAt: authorizationCodeModel.authorizationCodeExpirationDate,
+        scope: authorizationCodeModel.scope,
+        client: authorizationCodeModel.client.toJSON(),
+        user: authorizationCodeModel.user.toJSON(),
       };
     } catch (err) {
       return null;
@@ -34,21 +55,17 @@ const model = {
 
   getRefreshToken: async function(bearerToken: string): Promise<RefreshToken> {
     try {
-      const refreshToken = await tokenService.getRefreshToken(bearerToken);
-      const client = await clientsService.getClientById(refreshToken.clientId);
-      const user = await userService.getUserById(refreshToken.userId);
+      const refreshToken = await AccessTokenService.getRefreshToken(bearerToken);
 
-      if (!refreshToken || !user || !client) {
+      if (!refreshToken) {
         return null;
       }
 
       return {
         refreshToken: refreshToken.accessToken,
-        client: {
-          id: client.clientId,
-        },
+        client: refreshToken.client.toJSON(),
         expires: refreshToken.accessTokenExpirationDate,
-        user: userService.cleanUpUser(user),
+        user: refreshToken.user.toJSON(),
       };
     } catch (err) {
       return null;
@@ -57,16 +74,18 @@ const model = {
 
   getClient: async function(clientId: string, clientSecret?: string): Promise<ClientResponse> {
     try {
-      const client = await clientsService.getClientByIdAndSecret(clientId, clientSecret);
+      const client = await ClientsService.getClientByIdAndSecret(clientId, clientSecret);
 
       if (!client) {
         return null;
       }
 
       return {
+        id: client.id,
         clientId: client.clientId,
         clientSecret: client.clientSecret,
-        grants: ["password", "refresh_token"],
+        grants: client.grants.split(","),
+        redirectUris: client.redirectUris.split(","),
       };
     } catch (err) {
       return null;
@@ -74,11 +93,23 @@ const model = {
   },
 
   getUser: async function(login: string, password: string): Promise<User> {
-    return await userService.getUserByLoginAndPassword(login, password);
+    return await UserService.getUserByLoginAndPassword(login, password);
   },
 
   saveToken: async function(token, client, user): Promise<AccessToken> {
-    return await tokenService.saveToken(token, client, user);
+    return await AccessTokenService.saveToken(token, client, user);
+  },
+
+  revokeToken: async function(token): Promise<number> {
+    return await AccessTokenService.deleteToken(token);
+  },
+
+  saveAuthorizationCode: async function(code, client, user): Promise<AuthorizationCode> {
+    return await AuthorizationCodeService.saveCode(code, client, user);
+  },
+
+  revokeAuthorizationCode: async function(code): Promise<number> {
+    return await AuthorizationCodeService.deleteCode(code);
   },
 };
 

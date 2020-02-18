@@ -1,5 +1,5 @@
 import config from "config";
-import OAuth2Server from "express-oauth-server-patched";
+import OAuth2Server from "express-oauth-server";
 
 import OauthModel from "@middleware/oauth.model";
 
