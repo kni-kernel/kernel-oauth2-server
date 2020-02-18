@@ -42,6 +42,11 @@ export default class User extends Model<User> {
   })
   public privilege: Privilege;
 
+  @Column({
+    type: DataType.ENUM("AppliedCS", "TechnicalPH", "MedicalPH", "NanoTech"),
+  })
+  public fieldOfStudy: FieldOfStudy;
+
   @CreatedAt
   public createdAt: Date;
 
