@@ -4,7 +4,6 @@ import {
   CreatedAt,
   DataType,
   DeletedAt,
-  HasOne,
   IsEmail,
   Model,
   PrimaryKey,
@@ -12,8 +11,6 @@ import {
   Unique,
   UpdatedAt,
 } from "sequelize-typescript";
-
-import Token from "@models/Token";
 
 @Table({
   tableName: "users",
@@ -44,9 +41,6 @@ export default class User extends Model<User> {
     type: DataType.ENUM("Student", "Foreman", "Admin"),
   })
   public privilege: Privilege;
-
-  @HasOne(() => User, "id")
-  public token: Token;
 
   @CreatedAt
   public createdAt: Date;

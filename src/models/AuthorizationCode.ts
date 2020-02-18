@@ -1,5 +1,6 @@
 import {
   AutoIncrement,
+  BelongsTo,
   Column,
   CreatedAt,
   DeletedAt,
@@ -10,36 +11,41 @@ import {
   UpdatedAt,
 } from "sequelize-typescript";
 
+import Client from "@models/Client";
 import User from "@models/User";
 
 @Table({
-  tableName: "oauth_tokens",
+  tableName: "oauth_authorization_codes",
   underscored: true,
 })
-export default class Token extends Model<Token> {
+export default class AuthorizationCode extends Model<AuthorizationCode> {
   @PrimaryKey
   @AutoIncrement
   @Column
   public id: number;
 
   @Column
-  public accessToken: string;
+  public authorizationCode: string;
 
   @Column
-  public accessTokenExpirationDate: Date;
+  public authorizationCodeExpirationDate: Date;
 
   @Column
-  public clientId: string;
+  public scope: string;
 
+  @ForeignKey(() => Client)
   @Column
-  public refreshToken: string;
+  public clientId: number;
 
-  @Column
-  public refreshTokenExpirationDate: Date;
+  @BelongsTo(() => Client)
+  public client: Client;
 
   @ForeignKey(() => User)
   @Column
   public userId: number;
+
+  @BelongsTo(() => User)
+  public user: User;
 
   @CreatedAt
   public createdAt: Date;
