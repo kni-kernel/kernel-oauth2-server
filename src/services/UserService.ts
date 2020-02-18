@@ -36,30 +36,4 @@ export default class UserService {
       return null;
     }
   }
-
-  /**
-   * Returns user by primary key (id)
-   * @param id
-   */
-  public static async getUserById(id: number): Promise<User> {
-    return User.findByPk(id);
-  }
-
-  /**
-   * Returns user without sensitive data
-   * @param user
-   */
-  public static cleanUpUser(user: User): Partial<User> {
-    return {
-      id: user.id,
-      login: user.login,
-      beginningYear: user.beginningYear,
-      email: user.email,
-      privilege: user.privilege,
-    };
-  }
-
-  // TODO: Add creating users here, with verification, whether requesting user is admin
-
-  // TODO: Add editing users here, with verification, whether requesting user is admin (edit all), foreman (edit his year), user (edit himself)
 }
