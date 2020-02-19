@@ -36,4 +36,24 @@ export default class UserService {
       return null;
     }
   }
+
+  /**
+   * Gets user by ID
+   * @param id
+   */
+  public static async getUserById(id: number): Promise<User> {
+    try {
+      const user = await User.findByPk(id);
+
+      if (!user) {
+        Logger.log("info", `This user doesn't exists! (${id})`);
+        return null;
+      }
+
+      return user;
+    } catch (err) {
+      Logger.log("error", "UserService getUserById error", { message: err });
+      return null;
+    }
+  }
 }
