@@ -1,15 +1,16 @@
 import { Router } from "express";
+import { check } from "express-validator";
 import passport from "passport";
 
 import csrf from "@util/csrf";
 
+import { RequestOverride } from "ExpressOverride";
+
 const router = Router();
 
-router.get("/", csrf, (req, res) => {
+router.get("/", csrf, (req: RequestOverride, res) => {
   return res.render("authorize", {
     action: "/login",
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-    // @ts-ignore
     csrf: req.csrfToken(),
     isOauth: false,
   });
@@ -18,6 +19,7 @@ router.get("/", csrf, (req, res) => {
 router.post(
   "/login",
   csrf,
+  [check("username").notEmpty(), check("password").notEmpty()],
   passport.authenticate("local", {
     successRedirect: "/dashboard",
     failureRedirect: "/",

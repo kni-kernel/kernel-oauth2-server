@@ -1,4 +1,7 @@
-import { Router } from "express";
+import { Request, Router } from "express";
+import { check } from "express-validator";
+
+import User from "@models/User";
 
 import oauth2Server from "@middleware/oauth";
 import UserService from "@services/UserService";
@@ -9,8 +12,6 @@ const router = Router();
 router.get("/authorize", (req, res) => {
   return res.render("authorize", {
     action: "/oauth/authorize",
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-    // @ts-ignore
     csrf: req.query.state,
     redirect: req.query.redirect,
     clientId: req.query.client_id,
@@ -22,6 +23,7 @@ router.get("/authorize", (req, res) => {
 
 router.post(
   "/authorize",
+  [check("username").notEmpty(), check("password").notEmpty()],
   async (req, res, next) => {
     try {
       const user = await UserService.getUserByLoginAndPassword(req.body.username, req.body.password);
@@ -29,8 +31,6 @@ router.post(
       if (!user) {
         return res.render("authorize", {
           action: "/oauth/authorize",
-          // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-          // @ts-ignore
           csrf: req.body.state,
           redirect: req.body.redirect,
           clientId: req.body.client_id,
@@ -49,8 +49,7 @@ router.post(
   },
   oauth2Server.authorize({
     authenticateHandler: {
-      // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-      handle: req => {
+      handle: (req: Request): User => {
         return req.body.user;
       },
     },
