@@ -5,8 +5,30 @@ import User from "@models/User";
 import Logger from "@util/logger";
 
 import UserUpdates from "UserUpdates";
+import UserGetOptions from "UserGetOptions";
 
 export default class UserService {
+  /**
+   * Returns all users
+   * @param opts
+   */
+  public static async getUsers(opts?: UserGetOptions): Promise<User[]> {
+    try {
+      if (opts) {
+        return await User.findAll({
+          where: {
+            ...opts,
+          },
+        });
+      }
+
+      return await User.findAll();
+    } catch (err) {
+      Logger.log("error", "UserService getUsers error", { err });
+      return null;
+    }
+  }
+
   /**
    * Returns user based on username and password
    * @param username
