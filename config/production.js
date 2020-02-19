@@ -10,9 +10,14 @@ module.exports = {
     port: process.env.DATABASE_PORT,
     user: process.env.DATABASE_USER,
   },
+  redis: {
+    host: process.env.REDIS_HOST,
+    port: process.env.REDIS_PORT,
+  },
   oauth: {
     port: 5000,
     debug: false,
+    cookieSecret: process.env.OAUTH_COOKIE_SECRET,
     dsn: process.env.OAUTH_DSN,
   },
 };
