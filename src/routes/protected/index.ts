@@ -4,6 +4,7 @@ import { isAuthenticated, isAuthenticatedAsForeman, isAuthenticatedAsAdmin } fro
 
 import dashboardRoutes from "@routes/protected/dashboard";
 import userChangeRoutes from "@routes/protected/userChange";
+import userListRoutes from "@routes/protected/userList";
 
 const router = Router();
 
@@ -11,6 +12,7 @@ const router = Router();
 router.use(isAuthenticated);
 router.use(dashboardRoutes);
 router.use(userChangeRoutes);
+router.use(userListRoutes);
 
 // Routes which need foreman / admin authentication
 router.use(isAuthenticatedAsForeman);
