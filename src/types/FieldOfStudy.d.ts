@@ -1,5 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-enum FieldOfStudy {
+const enum FieldOfStudy {
   AppliedCS = 0,
   TechnicalPH = 1,
   MedicalPH = 2,

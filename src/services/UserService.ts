@@ -4,35 +4,37 @@ import User from "@models/User";
 
 import Logger from "@util/logger";
 
+import UserUpdates from "UserUpdates";
+
 export default class UserService {
   /**
-   * Returns user based on login and password
-   * @param login
+   * Returns user based on username and password
+   * @param username
    * @param password
    */
-  public static async getUserByLoginAndPassword(login: string, password: string): Promise<User> {
+  public static async getUserByLoginAndPassword(username: string, password: string): Promise<User> {
     try {
       const user = await User.findOne({
         where: {
-          login,
+          username,
         },
       });
 
       if (!user) {
-        Logger.log("info", `This user doesn't exists! (${login})`);
+        Logger.log("info", `This user doesn't exists! (${username})`);
         return null;
       }
 
       const match = await bcrypt.compare(password, user.password);
 
       if (!match) {
-        Logger.log("info", `Incorrect password for user! (${login})`);
+        Logger.log("info", `Incorrect password for user! (${username})`);
         return null;
       }
 
       return user;
     } catch (err) {
-      Logger.log("error", "UserService getUserByLoginAndPassword error", { message: err });
+      Logger.log("error", "UserService getUserByLoginAndPassword error", { err });
       return null;
     }
   }
@@ -52,8 +54,32 @@ export default class UserService {
 
       return user;
     } catch (err) {
-      Logger.log("error", "UserService getUserById error", { message: err });
+      Logger.log("error", "UserService getUserById error", { err });
       return null;
+    }
+  }
+
+  /**
+   * Updates user by ID
+   * @param id
+   * @param updates
+   */
+  public static async updateUser(id: number, updates: UserUpdates): Promise<boolean> {
+    try {
+      if (updates.password.length === 0) {
+        delete updates.password;
+      } else {
+        updates.password = await bcrypt.hash(updates.password, 10);
+      }
+      await User.update(updates, {
+        where: {
+          id,
+        },
+      });
+      return true;
+    } catch (err) {
+      Logger.log("error", "UserService updateUser error", { err });
+      return false;
     }
   }
 }

@@ -19,11 +19,14 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser(config.get("oauth.cookieSecret")));
 app.use(routes);
 
-app.listen(config.get("oauth.port"), async err => {
-  if (err) {
-    Logger.log("error", "App error", { message: err });
-    return;
-  }
-  await database.sync({ force: false });
-  Logger.log("info", `App is running at 0.0.0.0:${config.get("oauth.port")}`);
-});
+app.listen(
+  config.get("oauth.port"),
+  async (err): Promise<void> => {
+    if (err) {
+      Logger.log("error", "App error", { err });
+      return;
+    }
+    await database.sync({ force: false });
+    Logger.log("info", `App is running at 0.0.0.0:${config.get("oauth.port")}`);
+  },
+);

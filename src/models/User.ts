@@ -24,7 +24,7 @@ export default class User extends Model<User> {
 
   @Unique
   @Column
-  public login: string;
+  public username: string;
 
   @Column
   public password: string;

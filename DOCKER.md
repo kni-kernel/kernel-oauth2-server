@@ -24,6 +24,9 @@ Variable                | Description
 `DATABASE_PASSWORD`     | `kernel-oauth2-server` database password
 `DATABASE_PORT`         | `kernel-oauth2-server` database port
 `DATABASE_USER`         | `kernel-oauth2-server` database user
+`REDIS_HOST`            | `kernel-oauth2-server` redis database host (for sessions)
+`REDIS_PORT`            | `kernel-oauth2-server` redis database port
+`OAUTH_COOKIE_SECRET`   | Cookie secret string
 `OAUTH_DSN`             | Sentry.io DSN url - used for remote logger (optional)
 
 ## How to run?
