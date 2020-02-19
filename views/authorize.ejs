@@ -9,8 +9,8 @@
     </div>
 </section>
 <section class="section">
-    <div class="container" style="max-width: 30vw;">
-        <form action="/oauth/authorize" method="post">
+    <div class="container" style="max-width: 500px;">
+        <form action="<%= action %>" method="post">
             <div class="box is-bordered">
                 <p class="is-size-5">Zaloguj się swoim kontem</p>
 
@@ -34,11 +34,15 @@
                     </p>
                 </div>
 
-                <input type="hidden" name="redirect" value="<%= redirect %>" />
-                <input type="hidden" name="client_id" value="<%= client_id %>" />
-                <input type="hidden" name="redirect_uri" value="<%= redirect_uri %>" />
-                <input type="hidden" name="response_type" value="<%= response_type %>" />
-                <input type="hidden" name="state" value="<%= csrf %>" />
+                <% if (isOauth) { %>
+                    <input type="hidden" name="redirect" value="<%= redirect %>" />
+                    <input type="hidden" name="client_id" value="<%= clientId %>" />
+                    <input type="hidden" name="redirect_uri" value="<%= redirectUri %>" />
+                    <input type="hidden" name="response_type" value="<%= responseType %>" />
+                    <input type="hidden" name="state" value="<%= csrf %>" />
+                <% } else { %>
+                    <input type="hidden" name="_csrf" value="<%= csrf %>" />
+                <% } %>
 
                 <div class="field">
                     <p class="control">
