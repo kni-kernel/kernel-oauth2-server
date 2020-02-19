@@ -1,0 +1,28 @@
+version: '3'
+services:
+  postgresql:
+    container_name: postgres_kernel-oauth2-server
+    image: "postgres"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=uDZnB6EaBhB4mxZz
+      - POSTGRES_DB=oauth2
+  kernel-oauth2-server:
+    build: .
+    ports:
+      - "${OAUTH_PORT}:${OAUTH_PORT}"
+    links:
+      - postgresql
+    environment:
+      - DATABASE_ENGINE=postgres
+      - DATABASE_HOST=postgresql
+      - DATABASE_NAME=oauth2
+      - DATABASE_USER=postgres
+      - DATABASE_PASSWORD=uDZnB6EaBhB4mxZz
+      - DATABASE_PORT=5432
+    env_file:
+      - .env
+volumes:
+  postgres-data:
+    driver: local
