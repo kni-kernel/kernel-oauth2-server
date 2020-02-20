@@ -18,6 +18,7 @@ router.get("/authorize", (req, res) => {
     redirectUri: req.query.redirect_uri,
     responseType: "code",
     isOauth: true,
+    wrongCreds: false,
   });
 });
 
@@ -37,6 +38,7 @@ router.post(
           redirectUri: req.body.redirect_uri,
           responseType: "code",
           isOauth: true,
+          wrongCreds: true,
         });
       }
 
