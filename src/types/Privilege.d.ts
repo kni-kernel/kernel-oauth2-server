@@ -1,5 +1,5 @@
 const enum Privilege {
-  Student = 0,
-  Foreman = 1,
-  Admin = 2,
+  Student = "Student",
+  Foreman = "Foreman",
+  Admin = "Admin",
 }
