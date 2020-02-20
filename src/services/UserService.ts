@@ -1,4 +1,5 @@
 import bcrypt from "bcrypt";
+import NodeSsh from "node-ssh";
 
 import User from "@models/User";
 
@@ -6,6 +7,7 @@ import Logger from "@util/logger";
 
 import UserUpdates from "UserUpdates";
 import UserGetOptions from "UserGetOptions";
+import EmailService from "@services/EmailService";
 
 export default class UserService {
   /**
@@ -94,6 +96,71 @@ export default class UserService {
     } catch (err) {
       Logger.log("error", "UserService getUserById error", { err });
       return null;
+    }
+  }
+
+  /**
+   * Import all users from certain year via Taurus SSH connection
+   * @param beginningYear
+   * @param taurusUser
+   * @param taurusPassword
+   */
+  public static async importUsers(beginningYear: number, taurusUser: string, taurusPassword: string): Promise<boolean> {
+    try {
+      const ssh = new NodeSsh();
+      await ssh.connect({
+        host: "taurus.fis.agh.edu.pl",
+        username: taurusUser,
+        password: taurusPassword,
+        tryKeyboard: true,
+        onKeyboardInteractive: (name, instructions, instructionsLang, prompts, finish) => {
+          if (prompts.length > 0 && prompts[0].prompt.toLowerCase().includes("password")) {
+            finish([taurusPassword]);
+          }
+        },
+      });
+
+      const result = await ssh.execCommand("ls", { cwd: `/home/stud${beginningYear}` });
+
+      await ssh.dispose();
+
+      const userNames = result.stdout.split("\n");
+
+      const promises = userNames.map(username => {
+        const password = Math.random()
+          .toString(36)
+          .replace(/[^a-z]+/g, "")
+          .substr(0, 15);
+        return UserService.addUser({
+          username,
+          email: `${username}@fis.agh.edu.pl`,
+          password,
+          fieldOfStudy: FieldOfStudy.AppliedCS, // Unfortunately we have no way to distinguish different FOSes
+          beginningYear,
+          privilege: Privilege.Student,
+        }).then(async () => {
+          await EmailService.sendEmail(
+            `${username}@fis.agh.edu.pl`,
+            "Dostep do WFIIS Accounts",
+            `Czesc!
+            Twoje konto z Taurusa zostalo zaimportowane do systemu WFiIS Accounts - otrzymujesz miedzy innymi dostep do wiki wydzialowej!
+            Aby sie zalogowac skorzystaj z ponizszych hasel:
+            username: ${username}
+            haslo: ${password}
+            
+            Pozdrawiamy,
+            KNI Kernel.
+            `,
+          );
+        });
+      });
+
+      await Promise.all(promises);
+
+      return true;
+    } catch (err) {
+      Logger.log("error", "UserService importUsers error", { err });
+      return false;
     }
   }
 

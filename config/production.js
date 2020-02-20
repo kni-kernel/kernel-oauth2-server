@@ -20,4 +20,7 @@ module.exports = {
     cookieSecret: process.env.OAUTH_COOKIE_SECRET,
     dsn: process.env.OAUTH_DSN,
   },
+  sendgrid: {
+    key: process.env.SENDGRID_KEY,
+  },
 };

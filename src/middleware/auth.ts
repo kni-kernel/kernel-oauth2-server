@@ -60,7 +60,7 @@ const isAuthenticatedAsForeman = (req: RequestOverride, res: Response, next: Nex
     return next();
   }
 
-  return res.redirect("/");
+  return res.redirect("/dashboard");
 };
 
 const isAuthenticatedAsAdmin = (req: RequestOverride, res: Response, next: NextFunction): void => {
@@ -68,7 +68,7 @@ const isAuthenticatedAsAdmin = (req: RequestOverride, res: Response, next: NextF
     return next();
   }
 
-  return res.redirect("/");
+  return res.redirect("/dashboard");
 };
 
 export { localStrategy, isAuthenticated, isAuthenticatedAsForeman, isAuthenticatedAsAdmin };

@@ -30,6 +30,7 @@
     "@views": "dist/views/"
   },
   "dependencies": {
+    "@sendgrid/mail": "^6.5.3",
     "bcrypt": "^3.0.8",
     "bluebird": "^3.7.2",
     "body-parser": "^1.19.0",
@@ -42,8 +43,10 @@
     "express-oauth-server": "^2.0.0",
     "express-session": "^1.17.0",
     "express-validator": "^6.4.0",
+    "html-to-text": "^5.1.1",
     "lodash": "^4.17.15",
     "module-alias": "^2.2.2",
+    "node-ssh": "^7.0.0",
     "passport": "^0.4.1",
     "passport-local": "^1.0.0",
     "pg": "^7.18.1",
