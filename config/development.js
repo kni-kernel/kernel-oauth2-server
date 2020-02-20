@@ -20,4 +20,7 @@ module.exports = {
     cookieSecret: "sjkdhf g,jhsd fgjs dfjgh sdjf",
     dsn: "",
   },
+  sendgrid: {
+    key: "",
+  },
 };
