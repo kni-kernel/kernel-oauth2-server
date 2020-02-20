@@ -12,7 +12,7 @@ const router = Router();
 router.get("/authorize", (req, res) => {
   return res.render("authorize", {
     action: "/oauth/authorize",
-    csrf: req.query.state,
+    csrf: req.query.state || "notReallyGoodCSRD",
     redirect: req.query.redirect,
     clientId: req.query.client_id,
     redirectUri: req.query.redirect_uri,
