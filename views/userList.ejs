@@ -13,9 +13,7 @@
                     <th>Kierunek</th>
                     <th>Rok rozpoczęcia</th>
                     <th>Pozycja</th>
-                    <% if (user.privilege === "Admin") {%>
-                        <th>Akcje</th>
-                    <% } %>
+                    <th>Akcje</th>
                 </tr>
             </thead>
             <tbody>
@@ -39,11 +37,13 @@
                         <td>
                             <%= userData.privilege %>
                         </td>
-                        <% if (user.privilege === "Admin") {%>
                         <td>
-                            <a href="/dashboard/user/edit/<%=userData.id%>">Edytuj</a>
+                            <% if ((user.privilege === "Foreman" && userData.privilege !== "Admin") || user.privilege === "Admin") { %>
+                                <a href="/dashboard/user/edit/<%=userData.id%>">Edytuj</a>
+                            <% } else { %>
+                            -
+                            <% } %>
                         </td>
-                        <% } %>
                     </tr>
                 <% }) %>
             </tbody>
