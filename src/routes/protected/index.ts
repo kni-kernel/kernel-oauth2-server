@@ -4,6 +4,7 @@ import { isAuthenticated, isAuthenticatedAsForeman, isAuthenticatedAsAdmin } fro
 
 import dashboardRoutes from "@routes/protected/dashboard";
 import userAddRoutes from "@routes/protected/userAdd";
+import userEditRoutes from "@routes/protected/userEdit";
 import userChangeRoutes from "@routes/protected/userChange";
 import userListRoutes from "@routes/protected/userList";
 
@@ -17,6 +18,7 @@ router.use(userChangeRoutes);
 // Routes which need foreman / admin authentication
 router.use(isAuthenticatedAsForeman);
 router.use(userAddRoutes);
+router.use(userEditRoutes);
 router.use(userListRoutes);
 
 // Routes which need admin authentication
