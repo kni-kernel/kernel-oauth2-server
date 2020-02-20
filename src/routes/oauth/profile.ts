@@ -6,7 +6,7 @@ const router = Router();
 
 router.get("/profile", oauth2Server.authenticate(), (req, res) => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { id, password, ...rest } = res.locals.oauth.token.user;
+  const { password, ...rest } = res.locals.oauth.token.user;
   return res.json(rest);
 });
 
