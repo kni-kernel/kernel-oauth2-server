@@ -9,6 +9,22 @@ import UserGetOptions from "UserGetOptions";
 
 export default class UserService {
   /**
+   * Add new user
+   * @param userData
+   */
+  public static async addUser(userData: Partial<User>): Promise<boolean> {
+    try {
+      userData.password = await bcrypt.hash(userData.password, 10);
+      const newUser = new User(userData);
+      await newUser.save();
+      return true;
+    } catch (err) {
+      Logger.log("error", "UserService addUser error", { err });
+      return false;
+    }
+  }
+
+  /**
    * Returns all users
    * @param opts
    */

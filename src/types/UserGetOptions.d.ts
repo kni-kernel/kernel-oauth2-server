@@ -1,4 +1,4 @@
 export default interface UserGetOptions {
-  beggingYear: number;
+  beginningYear: number;
   fieldOfStudy: FieldOfStudy;
 }

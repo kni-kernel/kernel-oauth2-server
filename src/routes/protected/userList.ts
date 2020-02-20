@@ -12,7 +12,7 @@ router.get("/dashboard/user/list", async (req: RequestOverride, res) => {
 
   if (req.user.privilege === Privilege.Foreman) {
     opts = {
-      beggingYear: req.user.beginningYear,
+      beginningYear: req.user.beginningYear,
       fieldOfStudy: req.user.fieldOfStudy,
     };
   }
