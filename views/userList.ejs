@@ -13,7 +13,9 @@
                     <th>Kierunek</th>
                     <th>Rok rozpoczęcia</th>
                     <th>Pozycja</th>
-                    <th>Akcje</th>
+                    <% if (user.privilege === "Admin") {%>
+                        <th>Akcje</th>
+                    <% } %>
                 </tr>
             </thead>
             <tbody>
