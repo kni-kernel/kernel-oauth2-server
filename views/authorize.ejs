@@ -44,6 +44,10 @@
                     <input type="hidden" name="_csrf" value="<%= csrf %>" />
                 <% } %>
 
+                <% if (wrongCreds) { %>
+                    <p class="has-text-danger">Podane błędne dane logowania! Spróbuj ponownie!</p>
+                <% } %>
+
                 <div class="field">
                     <p class="control">
                         <button class="button is-dark is-fullwidth">

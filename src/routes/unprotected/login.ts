@@ -13,6 +13,7 @@ router.get("/", csrf, (req: RequestOverride, res) => {
     action: "/login",
     csrf: req.csrfToken(),
     isOauth: false,
+    wrongCreds: req.query.failed === "true",
   });
 });
 
@@ -22,7 +23,7 @@ router.post(
   [check("username").notEmpty(), check("password").notEmpty()],
   passport.authenticate("local", {
     successRedirect: "/dashboard",
-    failureRedirect: "/",
+    failureRedirect: "/?failed=true",
   }),
 );
 
