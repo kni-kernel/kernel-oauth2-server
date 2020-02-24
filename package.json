@@ -34,7 +34,7 @@
     "bcrypt": "^3.0.8",
     "bluebird": "^3.7.2",
     "body-parser": "^1.19.0",
-    "config": "^3.2.5",
+    "config": "^3.2.6",
     "connect-redis": "^4.0.4",
     "cookie-parser": "^1.4.4",
     "csurf": "^1.11.0",
