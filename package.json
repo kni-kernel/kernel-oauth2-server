@@ -46,7 +46,7 @@
     "html-to-text": "^5.1.1",
     "lodash": "^4.17.15",
     "module-alias": "^2.2.2",
-    "node-ssh": "^7.0.0",
+    "node-ssh": "^7.0.1",
     "passport": "^0.4.1",
     "passport-local": "^1.0.0",
     "pg": "^7.18.2",
