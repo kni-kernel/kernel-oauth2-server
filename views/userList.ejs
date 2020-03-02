@@ -2,7 +2,21 @@
 <%- include("partials/navbar.ejs", { user: user } ) -%>
 <section class="section">
     <div class="container">
-        <p class="is-size-3">Lista użytkowników</p>
+        <div class="columns">
+            <div class="column is-three-quarters">
+                <p class="is-size-3">Lista użytkowników</p>
+            </div>
+            <div class="column">
+                <form action="/dashboard/user/list" method="post">
+                    <div class="control has-icons-left">
+                        <input class="input is-rounded" type="text" name="search" placeholder="Search...">
+                        <span class="icon is-small is-left">
+                            <i class="fas fa-user"></i>
+                        </span>
+                    </div>
+                </form>
+            </div>
+        </div>
 
         <table class="table is-striped is-fullwidth">
             <thead>

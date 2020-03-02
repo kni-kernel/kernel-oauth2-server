@@ -1,5 +1,6 @@
 import bcrypt from "bcrypt";
 import NodeSsh from "node-ssh";
+import { Op } from "sequelize";
 
 import User from "@models/User";
 
@@ -96,6 +97,44 @@ export default class UserService {
     } catch (err) {
       Logger.log("error", "UserService getUserById error", { err });
       return null;
+    }
+  }
+
+  /**
+   * Finds users based on username or email
+   * @param input
+   * @param opts
+   */
+  public static async findUserByUsernameOrEmail(input: string, opts?: UserGetOptions): Promise<User[]> {
+    try {
+      const searchOpts = {
+        where: {
+          [Op.or]: [
+            {
+              username: {
+                [Op.like]: `%${input}%`,
+              },
+            },
+            {
+              email: {
+                [Op.like]: `%${input}%`,
+              },
+            },
+          ],
+        },
+      };
+
+      if (opts) {
+        searchOpts.where = {
+          ...searchOpts.where,
+          ...opts,
+        };
+      }
+
+      return await User.findAll(searchOpts);
+    } catch (err) {
+      Logger.log("error", "UserService findUserByUsernameOrEmail", { err });
+      return [];
     }
   }
 
