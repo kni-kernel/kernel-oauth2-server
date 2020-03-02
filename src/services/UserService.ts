@@ -165,38 +165,7 @@ export default class UserService {
 
       const userNames = result.stdout.split("\n");
 
-      const promises = userNames.map(username => {
-        const password = Math.random()
-          .toString(36)
-          .replace(/[^a-z]+/g, "")
-          .substr(0, 15);
-        return UserService.addUser({
-          username,
-          email: `${username}@fis.agh.edu.pl`,
-          password,
-          fieldOfStudy: FieldOfStudy.AppliedCS, // Unfortunately we have no way to distinguish different FOSes
-          beginningYear,
-          privilege: Privilege.Student,
-        }).then(async () => {
-          await EmailService.sendEmail(
-            `${username}@fis.agh.edu.pl`,
-            "Dostep do WFIIS Accounts",
-            `Czesc!
-            Twoje konto z Taurusa zostalo zaimportowane do systemu WFiIS Accounts - otrzymujesz miedzy innymi dostep do wiki wydzialowej!
-            Aby sie zalogowac skorzystaj z ponizszych hasel:
-            username: ${username}
-            haslo: ${password}
-            
-            Pozdrawiamy,
-            KNI Kernel.
-            `,
-          );
-        });
-      });
-
-      await Promise.all(promises);
-
-      return true;
+      return await UserService.importUsersFromArray(userNames, beginningYear);
     } catch (err) {
       Logger.log("error", "UserService importUsers error", { err });
       return false;
@@ -223,6 +192,65 @@ export default class UserService {
       return true;
     } catch (err) {
       Logger.log("error", "UserService updateUser error", { err });
+      return false;
+    }
+  }
+
+  /**
+   * Import users by array of names
+   * @param userNames
+   * @param beginningYear
+   * @param fieldOfStudy
+   */
+  public static async importUsersFromArray(
+    userNames: string[],
+    beginningYear: number,
+    fieldOfStudy?: FieldOfStudy,
+  ): Promise<boolean> {
+    try {
+      const promises = userNames.map(username => {
+        const password = Math.random()
+          .toString(36)
+          .replace(/[^a-z]+/g, "")
+          .substr(0, 15);
+        return UserService.addUser({
+          username,
+          email: `${username}@fis.agh.edu.pl`,
+          password,
+          fieldOfStudy: fieldOfStudy ? fieldOfStudy : FieldOfStudy.AppliedCS, // Unfortunately we have no way to distinguish different FOSes
+          beginningYear,
+          privilege: Privilege.Student,
+        }).then(async () => {
+          await EmailService.sendEmail(
+            `${username}@fis.agh.edu.pl`,
+            "Dostep do WFIIS Accounts",
+            `Czesc!<br>
+            Twoje konto z Taurusa zostalo zaimportowane do systemu WFiIS Accounts - otrzymujesz miedzy innymi dostep do wiki wydzialowej!<br>
+            Aby sie zalogowac skorzystaj z ponizszych hasel:<br>
+            username: ${username}<br>
+            haslo: ${password}<br><br>
+            
+            link: <a href="https://accounts.wfiis.pl/">https://accounts.wfiis.pl/</a><br><br>
+            
+            Wiki wydzialowa dostepna pod linkiem: <a href="https://wiki.wfiis.pl/">https://wiki.wfiis.pl/</a>
+            Kliknij "WFiIS OAUTH2", aby zalogowac sie swoim kontem WFiIS.<br>
+            Wiecej instrukcji powinno sie pojawic na Waszych grupach kierunkowych na FB.<br>
+            W razie pytan prosze kontaktowac sie ze swoim starostom roku.<br><br>
+            
+            Prosze nie kontaktowac sie na ten adres mailowy - nie odpiszemy.<br><br>
+            
+            Pozdrawiamy,<br>
+            KNI Kernel.
+            `,
+          );
+        });
+      });
+
+      await Promise.all(promises);
+
+      return true;
+    } catch (err) {
+      Logger.log("error", "UserService importUsersFromArray error", { err });
       return false;
     }
   }
