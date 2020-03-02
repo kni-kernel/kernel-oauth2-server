@@ -43,7 +43,7 @@ export default class User extends Model<User> {
   public privilege: Privilege;
 
   @Column({
-    type: DataType.ENUM("AppliedCS", "TechnicalPH", "MedicalPH", "NanoTech"),
+    type: DataType.ENUM("AppliedCS", "TechnicalPH", "MedicalPH", "NanoTech", "NanoInz"),
   })
   public fieldOfStudy: FieldOfStudy;
 

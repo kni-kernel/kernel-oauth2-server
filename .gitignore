@@ -33,3 +33,5 @@ dist/**/*
 
 # Ignore dev configs
 /config/local-*
+
+uploads

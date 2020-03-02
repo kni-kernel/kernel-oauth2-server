@@ -6,6 +6,7 @@ import dashboardRoutes from "@routes/protected/dashboard";
 import userAddRoutes from "@routes/protected/userAdd";
 import userEditRoutes from "@routes/protected/userEdit";
 import userImportRoutes from "@routes/protected/userImport";
+import userImportPwdRoutes from "@routes/protected/userImportPwd";
 import userChangeRoutes from "@routes/protected/userChange";
 import userListRoutes from "@routes/protected/userList";
 
@@ -25,5 +26,6 @@ router.use(userListRoutes);
 // Routes which need admin authentication
 router.use(isAuthenticatedAsAdmin);
 router.use(userImportRoutes);
+router.use(userImportPwdRoutes);
 
 export default router;

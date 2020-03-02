@@ -4,4 +4,5 @@ const enum FieldOfStudy {
   TechnicalPH = "TechnicalPH",
   MedicalPH = "MedicalPH",
   NanoTech = "NanoTech",
+  NanoInz = "NanoInz",
 }

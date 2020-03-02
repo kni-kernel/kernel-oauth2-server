@@ -18,7 +18,7 @@ export default class EmailService {
     try {
       await sgMail.send({
         to,
-        from: "kernel@fis.agh.edu.pl",
+        from: "accounts@wfiis.pl",
         subject,
         text: htmlToText.fromString(content),
         html: content,
