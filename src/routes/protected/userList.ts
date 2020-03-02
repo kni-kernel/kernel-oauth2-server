@@ -24,4 +24,25 @@ router.get("/dashboard/user/list", async (req: RequestOverride, res) => {
   }
 });
 
+router.post("/dashboard/user/list", async (req: RequestOverride, res) => {
+  const searchInput = req.body.search ? req.body.search.toString() : "";
+  let opts: UserGetOptions = undefined;
+
+  if (req.user.privilege === Privilege.Foreman) {
+    opts = {
+      beginningYear: req.user.beginningYear,
+      fieldOfStudy: req.user.fieldOfStudy,
+    };
+  }
+
+  try {
+    return res.render("userList", {
+      user: req.user,
+      users: await UserService.findUserByUsernameOrEmail(searchInput, opts),
+    });
+  } catch (err) {
+    return res.render("error", { user: req.user, error: err });
+  }
+});
+
 export default router;
